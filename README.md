@@ -11,7 +11,7 @@ There's a base session store interface that can be implemented by whatever you t
 - [x] Session based auth
 - [x] CSRF protection
 - [x] Automatic redundant session cleanup (with goroutines)
-- [] Encrypted session data
+- [ ] Encrypted session data
 
 ## Tests
 
