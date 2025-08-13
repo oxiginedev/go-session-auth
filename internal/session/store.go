@@ -36,15 +36,15 @@ var (
 )
 
 type Session struct {
-	id           string         `json:"id"`
-	userID       string         `json:"user_id"`
-	payload      map[string]any `json:"payload"`
-	ipAddress    string         `json:"ip_address"`
-	userAgent    string         `json:"user_agent"`
-	lastActivity time.Time      `json:"last_activity"`
-	createdAt    time.Time      `json:"created_at"`
-	expiresAt    time.Time      `json:"expires_at"`
-	fingerprint  string         `json:"fingerprint"`
+	id           string
+	userID       string
+	payload      map[string]any
+	ipAddress    string
+	userAgent    string
+	lastActivity time.Time
+	createdAt    time.Time
+	expiresAt    time.Time
+	fingerprint  string
 
 	mu sync.RWMutex
 }
