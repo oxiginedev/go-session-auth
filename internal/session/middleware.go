@@ -53,7 +53,7 @@ func (m *Manager) Handle(next http.Handler) http.Handler {
 
 		next.ServeHTTP(sw, r)
 
-		if err := m.store.Set(r.Context(), session); err != nil {
+		if err := m.SaveSession(r.Context(), session); err != nil {
 			panic(err)
 		}
 

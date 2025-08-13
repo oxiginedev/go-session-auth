@@ -36,15 +36,15 @@ var (
 )
 
 type Session struct {
-	id           string
-	userID       string
-	payload      map[string]any
-	ipAddress    string
-	userAgent    string
-	lastActivity time.Time
-	createdAt    time.Time
-	expiresAt    time.Time
-	fingerprint  string
+	id           string         `json:"id"`
+	userID       string         `json:"user_id"`
+	payload      map[string]any `json:"payload"`
+	ipAddress    string         `json:"ip_address"`
+	userAgent    string         `json:"user_agent"`
+	lastActivity time.Time      `json:"last_activity"`
+	createdAt    time.Time      `json:"created_at"`
+	expiresAt    time.Time      `json:"expires_at"`
+	fingerprint  string         `json:"fingerprint"`
 
 	mu sync.RWMutex
 }
@@ -64,6 +64,13 @@ func (s *Session) Put(key string, value any) {
 }
 
 func (s *Session) Has(key string) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	if _, ok := s.payload[key]; ok {
+		return true
+	}
+
 	return false
 }
 
@@ -226,7 +233,7 @@ func (m *Manager) DestroySession(w http.ResponseWriter, r *http.Request) error {
 	http.SetCookie(w, &http.Cookie{
 		Name:     m.config.Name,
 		Value:    "",
-		Domain:   "",
+		Domain:   m.config.Domain,
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
 		Secure:   m.config.Secure,
