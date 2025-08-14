@@ -7,30 +7,47 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
+	"github.com/oxiginedev/go-session/handlers"
 	"github.com/oxiginedev/go-session/internal/session"
 	"github.com/oxiginedev/go-session/internal/session/memory"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("failed to load env variables - %v", err)
+	}
+
 	sm := session.NewManager(memory.NewMemoryStore(), nil)
 	defer func() {
 		_ = sm.Close()
 	}()
 
-	mux := http.NewServeMux()
+	// db, err := sqlite.New(context.Background())
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer func() {
+	// 	_ = db.Close()
+	// }()
+	port, err := strconv.Atoi(os.Getenv("APP_PORT"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	mux.Handle("/", sm.VerifyCSRFToken(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			_, _ = w.Write([]byte("Server is active!"))
-		},
-	)))
+	handler := handlers.New(sm)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", 5000),
-		Handler: sm.Handle(mux),
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           handler.InitRoutes(),
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       time.Minute,
+		ReadHeaderTimeout: 2 * time.Second,
 	}
 
 	quit := make(chan os.Signal, 1)

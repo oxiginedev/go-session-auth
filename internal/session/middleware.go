@@ -70,7 +70,7 @@ func (m *Manager) VerifyCSRFToken(next http.Handler) http.Handler {
 		if utils.SliceContains(methods, method) {
 			session := GetSessionFromContext(r.Context())
 			if session == nil {
-				http.Error(w, "session required", http.StatusUnauthorized)
+				http.Error(w, "session required", http.StatusAccepted)
 				return
 			}
 
